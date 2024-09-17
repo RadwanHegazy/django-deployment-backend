@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'dj_auth_package',
     'rest_framework',
     'users',
+    'service',
 ]
 
 MIDDLEWARE = [

@@ -7,7 +7,7 @@ class TestEndpoints (TestCase) :
 
     def create_test_user(self) :
         u = self.user.objects.create(
-            username='test',
+            full_name='test',
             email='test@gmail.com'
         )
         u.set_password('test')
@@ -29,7 +29,7 @@ class TestEndpoints (TestCase) :
     def test_login_endpoint_valid_data(self) : 
         u = self.create_test_user()
         response = self.client.post(self.login_url,data={
-            'username' : 'test',
+            'email' : 'test@gmail.com',
             'password' : 'test',
         })
         self.assertEqual(response.status_code, 201)
@@ -47,7 +47,7 @@ class TestEndpoints (TestCase) :
         response = self.client.post(self.register_url, data={
             'email' : 'test2@gmail.com',
             'password' : 'test',
-            'username' : 'test',
+            'full_name' : 'test',
         })
         self.assertEqual(response.status_code, 201)
 
