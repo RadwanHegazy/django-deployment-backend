@@ -17,14 +17,10 @@ class Service (models.Model) :
         return self.image + " | " + self.user.email 
     
 
-def run_docker(service_id) : 
-    serivce = Service.objects.get(id=service_id)
+def run_docker(port, image) : 
     client = docker.from_env()
-    port = serivce.port
-    client.containers.run(serivce.image, "python manage.py runserver 0.0.0.0:8000", ports={f"8000":port})
-    serivce.is_online = True
-    serivce.save()
-
+    client.containers.run(image, "python manage.py runserver 0.0.0.0:8000", ports={f"8000":port})
+    
 
 @receiver(post_save, sender=Service)
 def choose_port_for_service(created, instance:Service, **kwargs) : 
@@ -34,15 +30,16 @@ def choose_port_for_service(created, instance:Service, **kwargs) :
     # confirm that we generated a uniqe port
     while True :
         port = '1'
-        for i in range(1, randint(2,5)) :
+        for i in range(1, randint(4,5)) :
             port += str(randint(0,9))
 
         if Service.objects.filter(port=int(port)).exists() == False:
             break
 
-    thread = threading.Thread(target=run_docker, args=(instance.id,))
+
+    thread = threading.Thread(target=run_docker, args=(port,instance.image,))
     thread.start()
 
-
     instance.port = int(port)
+    instance.is_online = True
     instance.save()
